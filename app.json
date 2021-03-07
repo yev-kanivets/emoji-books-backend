@@ -1,0 +1,6 @@
+{
+  "name": "Emoji Books Backend",
+  "description": "Backend for Emoji Books project.",
+  "image": "heroku/java",
+  "addons": []
+}
