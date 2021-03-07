@@ -1,40 +1,64 @@
 package com.ykanivets.emojibooks.features.books
 
+import com.ykanivets.emojibooks.features.books.interactors.AddBookInteractor
+import com.ykanivets.emojibooks.features.books.interactors.DeleteBookInteractor
+import com.ykanivets.emojibooks.features.books.interactors.GetBooksInteractor
+import com.ykanivets.emojibooks.features.books.interactors.UpdateBookInteractor
 import com.ykanivets.emojibooks.features.books.models.BookBody
-import com.ykanivets.emojibooks.features.books.repository.BooksRepository
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import java.util.*
 
 fun Route.books(
-    booksRepository: BooksRepository = BooksRepository()
+    getBooksInteractor: GetBooksInteractor = GetBooksInteractor(),
+    addBookInteractor: AddBookInteractor = AddBookInteractor(),
+    updateBookInteractor: UpdateBookInteractor = UpdateBookInteractor(),
+    deleteBookInteractor: DeleteBookInteractor = DeleteBookInteractor()
 ) = route("books") {
 
     get {
-        call.respond(HttpStatusCode.OK, booksRepository.getAll())
+        call.respondBooks(getBooksInteractor)
     }
 
     post {
         val newBook = call.receive<BookBody>()
-        booksRepository.insert(newBook.toBook(id = UUID.randomUUID().toString()))
-        call.respond(HttpStatusCode.OK, booksRepository.getAll())
+
+        val request = AddBookInteractor.Request(newBook)
+        when (addBookInteractor.execute(request)) {
+            is AddBookInteractor.Response.Success -> call.respondBooks(getBooksInteractor)
+            is AddBookInteractor.Response.Failure -> call.respond(HttpStatusCode.BadRequest)
+        }
     }
 
     put("/{id}") {
         val bookId = call.parameters["id"]!!
         val bookBody = call.receive<BookBody>()
 
-        booksRepository.update(bookBody.toBook(id = bookId))
-
-        call.respond(HttpStatusCode.OK, booksRepository.getAll())
+        val request = UpdateBookInteractor.Request(bookId, bookBody)
+        when (updateBookInteractor.execute(request)) {
+            is UpdateBookInteractor.Response.Success -> call.respondBooks(getBooksInteractor)
+            is UpdateBookInteractor.Response.Failure -> call.respond(HttpStatusCode.BadRequest)
+        }
     }
 
     delete("/{id}") {
         val bookId = call.parameters["id"]!!
-        booksRepository.delete(bookId)
-        call.respond(HttpStatusCode.OK, booksRepository.getAll())
+
+        val request = DeleteBookInteractor.Request(bookId)
+        when (deleteBookInteractor.execute(request)) {
+            is DeleteBookInteractor.Response.Success -> call.respondBooks(getBooksInteractor)
+            is DeleteBookInteractor.Response.Failure -> call.respond(HttpStatusCode.BadRequest)
+        }
+    }
+}
+
+private suspend fun ApplicationCall.respondBooks(
+    getBooksInteractor: GetBooksInteractor
+) {
+    when (val response = getBooksInteractor.execute()) {
+        is GetBooksInteractor.Response.Success -> respond(HttpStatusCode.OK, response.books)
+        is GetBooksInteractor.Response.Failure -> respond(HttpStatusCode.BadRequest)
     }
 }
