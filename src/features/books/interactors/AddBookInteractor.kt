@@ -9,6 +9,7 @@ class AddBookInteractor(
 ) {
 
     data class Request(
+        val userId: String,
         val bookBody: BookBody
     )
 
@@ -21,7 +22,7 @@ class AddBookInteractor(
 
     suspend fun execute(request: Request): Response = with(request) {
         val book = bookBody.toBook(id = UUID.randomUUID().toString())
-        booksRepository.insert(book)
+        booksRepository.insert(userId, book)
         return Response.Success
     }
 }

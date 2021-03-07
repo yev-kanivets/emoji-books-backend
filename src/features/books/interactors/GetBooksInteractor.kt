@@ -7,6 +7,10 @@ class GetBooksInteractor(
     private val booksRepository: BooksRepository = BooksRepository.instance
 ) {
 
+    data class Request(
+        val userId: String
+    )
+
     sealed class Response {
 
         data class Success(
@@ -16,7 +20,7 @@ class GetBooksInteractor(
         object Failure : Response()
     }
 
-    suspend fun execute(): Response {
-        return Response.Success(booksRepository.getAll())
+    suspend fun execute(request: Request): Response = with(request) {
+        return Response.Success(booksRepository.getAll(userId))
     }
 }

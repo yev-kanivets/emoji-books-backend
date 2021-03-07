@@ -8,6 +8,7 @@ class UpdateBookInteractor(
 ) {
 
     data class Request(
+        val userId: String,
         val bookId: String,
         val bookBody: BookBody
     )
@@ -21,7 +22,7 @@ class UpdateBookInteractor(
 
     suspend fun execute(request: Request): Response = with(request) {
         val book = bookBody.toBook(id = bookId)
-        booksRepository.update(book)
+        booksRepository.update(userId, book)
         return Response.Success
     }
 }

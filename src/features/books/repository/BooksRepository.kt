@@ -4,15 +4,19 @@ import com.ykanivets.emojibooks.features.books.models.Book
 
 class BooksRepository {
 
-    private val books = mutableListOf<Book>()
+    private val books = mutableMapOf<String, MutableList<Book>>()
 
-    fun getAll() = books
+    fun getAll(userId: String) = getUserBooks(userId).toList()
 
-    fun insert(book: Book) = books.add(book)
+    fun insert(userId: String, book: Book) = getUserBooks(userId).add(book)
 
-    fun update(updatedBook: Book) = books.replaceAll { book -> if (book.id == updatedBook.id) updatedBook else book }
+    fun update(userId: String, updatedBook: Book) = getUserBooks(userId).replaceAll { book ->
+        if (book.id == updatedBook.id) updatedBook else book
+    }
 
-    fun delete(id: String) = books.removeIf { book -> book.id == id }
+    fun delete(userId: String, id: String) = getUserBooks(userId).removeIf { book -> book.id == id }
+
+    private fun getUserBooks(userId: String) = books.getOrPut(userId) { mutableListOf() }
 
     companion object {
 

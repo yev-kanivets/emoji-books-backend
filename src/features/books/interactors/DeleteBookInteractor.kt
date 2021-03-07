@@ -7,6 +7,7 @@ class DeleteBookInteractor(
 ) {
 
     data class Request(
+        val userId: String,
         val bookId: String
     )
 
@@ -18,7 +19,7 @@ class DeleteBookInteractor(
     }
 
     suspend fun execute(request: Request): Response = with(request) {
-        booksRepository.delete(bookId)
+        booksRepository.delete(userId, bookId)
         return Response.Success
     }
 }
