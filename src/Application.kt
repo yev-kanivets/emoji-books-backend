@@ -7,6 +7,7 @@ import io.ktor.routing.*
 import io.ktor.http.*
 import io.ktor.auth.*
 import io.ktor.features.*
+import io.ktor.serialization.*
 import org.slf4j.event.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -25,7 +26,9 @@ fun Application.module(testing: Boolean = false) {
         header("X-Engine", "Ktor") // will send this header with each response
     }
 
-    install(ContentNegotiation)
+    install(ContentNegotiation) {
+        json()
+    }
 
     install(StatusPages) {
         exception<AuthenticationException> { cause ->
