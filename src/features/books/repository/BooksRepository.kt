@@ -13,4 +13,9 @@ class BooksRepository {
     fun update(updatedBook: Book) = books.replaceAll { book -> if (book.id == updatedBook.id) updatedBook else book }
 
     fun delete(id: String) = books.removeIf { book -> book.id == id }
+
+    companion object {
+
+        val instance = BooksRepository()
+    }
 }
