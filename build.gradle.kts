@@ -33,6 +33,7 @@ dependencies {
     implementation( "io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-server-host-common:$ktor_version")
+    implementation("com.google.firebase:firebase-admin:7.1.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 

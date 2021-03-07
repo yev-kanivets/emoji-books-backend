@@ -5,3 +5,5 @@
 *.iml
 *.ipr
 *.iws
+*.DS_Store
+emoji-books-firebase-adminsdk.json
