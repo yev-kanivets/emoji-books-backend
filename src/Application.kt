@@ -1,6 +1,7 @@
 package com.ykanivets.emojibooks
 
 import com.google.firebase.FirebaseApp
+import com.ykanivets.emojibooks.database.initDatabase
 import com.ykanivets.emojibooks.features.books.books
 import firebase.FirebasePrincipal
 import firebase.firebase
@@ -21,6 +22,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     initFirebase()
+    initDatabase()
 
     install(CallLogging) {
         level = Level.INFO
