@@ -1,6 +1,10 @@
 package com.ykanivets.emojibooks
 
+import com.google.firebase.FirebaseApp
 import com.ykanivets.emojibooks.features.books.books
+import firebase.FirebasePrincipal
+import firebase.firebase
+import firebase.initFirebase
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.request.*
@@ -16,7 +20,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    install(Authentication)
+    initFirebase()
 
     install(CallLogging) {
         level = Level.INFO
@@ -40,8 +44,18 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    authentication {
+        firebase("firebase", FirebaseApp.getInstance()) {
+            validate { credential ->
+                FirebasePrincipal(userId = credential.token.uid)
+            }
+        }
+    }
+
     routing {
-        books()
+        authenticate("firebase") {
+            books()
+        }
     }
 }
 
