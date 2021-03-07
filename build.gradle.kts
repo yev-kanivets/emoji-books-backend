@@ -9,6 +9,7 @@ plugins {
     application
     kotlin("jvm") version "1.4.30"
     kotlin("plugin.serialization") version "1.4.30"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 group = "com.ykanivets.emojibooks"
@@ -16,6 +17,16 @@ version = "1.0.0"
 
 application {
     mainClassName = "io.ktor.server.netty.EngineMain"
+}
+
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        archiveFileName.set("emoji-books-backend.jar")
+        mergeServiceFiles()
+        manifest {
+            attributes(mapOf("Main-Class" to "io.ktor.server.netty.EngineMain"))
+        }
+    }
 }
 
 repositories {
