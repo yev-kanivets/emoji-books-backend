@@ -23,6 +23,7 @@ repositories {
     jcenter()
     maven { url = uri("https://kotlin.bintray.com/ktor") }
     maven { url = uri("https://kotlin.bintray.com/kotlinx") }
+    maven { url = uri("https://bintray.com/kotlin/exposed") }
 }
 
 dependencies {
@@ -34,6 +35,9 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-server-host-common:$ktor_version")
     implementation("com.google.firebase:firebase-admin:7.1.0")
+    implementation("org.jetbrains.exposed:exposed:0.6.3")
+    implementation("org.postgresql:postgresql:42.2.18")
+    implementation("com.zaxxer:HikariCP:3.4.5")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 
