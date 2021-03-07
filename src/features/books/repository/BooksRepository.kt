@@ -1,22 +1,46 @@
 package com.ykanivets.emojibooks.features.books.repository
 
+import com.ykanivets.emojibooks.database.dbQuery
+import com.ykanivets.emojibooks.features.books.dao.BooksDao
 import com.ykanivets.emojibooks.features.books.models.Book
+import org.jetbrains.exposed.sql.*
 
 class BooksRepository {
 
-    private val books = mutableMapOf<String, MutableList<Book>>()
-
-    fun getAll(userId: String) = getUserBooks(userId).toList()
-
-    fun insert(userId: String, book: Book) = getUserBooks(userId).add(book)
-
-    fun update(userId: String, updatedBook: Book) = getUserBooks(userId).replaceAll { book ->
-        if (book.id == updatedBook.id) updatedBook else book
+    suspend fun getAll(userId: String) = dbQuery {
+        BooksDao.select { BooksDao.userId eq userId }.map { it.toBook() }
     }
 
-    fun delete(userId: String, id: String) = getUserBooks(userId).removeIf { book -> book.id == id }
+    suspend fun insert(userId: String, book: Book) = dbQuery {
+        BooksDao.insert {
+            it[id] = book.id
+            it[BooksDao.userId] = userId
+            it[emoji] = book.emoji
+            it[title] = book.title
+            it[author] = book.author
+        }
+    }
 
-    private fun getUserBooks(userId: String) = books.getOrPut(userId) { mutableListOf() }
+    suspend fun update(userId: String, updatedBook: Book) = dbQuery {
+        BooksDao.update(
+            where = { (BooksDao.userId eq userId) and (BooksDao.id eq updatedBook.id) }
+        ) {
+            it[emoji] = updatedBook.emoji
+            it[title] = updatedBook.title
+            it[author] = updatedBook.author
+        }
+    }
+
+    suspend fun delete(userId: String, id: String) = dbQuery {
+        BooksDao.deleteWhere { (BooksDao.userId eq userId) and (BooksDao.id eq id) }
+    }
+
+    private fun ResultRow.toBook() = Book(
+        id = this[BooksDao.id],
+        emoji = this[BooksDao.emoji],
+        title = this[BooksDao.title],
+        author = this[BooksDao.author],
+    )
 
     companion object {
 
