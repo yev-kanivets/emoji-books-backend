@@ -1,5 +1,6 @@
 package com.ykanivets.emojibooks
 
+import com.ykanivets.emojibooks.features.books.books
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.request.*
@@ -40,9 +41,7 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
+        books()
     }
 }
 
